@@ -1,1 +1,1 @@
--include("../com_log.hrl").
+-include("../../src/common/com_log.hrl").
