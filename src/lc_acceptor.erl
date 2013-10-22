@@ -30,14 +30,17 @@ loop(LSocket, Func) ->
 	case gen_tcp:accept(LSocket, infinity) of
 		{ok, CSocket} ->
             ?DEBUG_LOG("new C socket1, fun~p", [Func]),
-            {ok, Pid} = Func(CSocket),
-            ?DEBUG_LOG("new C socket2,"),
-            case gen_tcp:controlling_process(CSocket, Pid) of
-                ok ->
-                    ok;
-                {error, Reason} ->
-                    ?ERROR_LOG("controlling_process ~p error:~p", [Pid, Reason]),
-                    gen_tcp:close(CSocket)
+            case Func(CSocket) of
+                {ok, Pid} -> 
+                    case gen_tcp:controlling_process(CSocket, Pid) of
+                        ok ->
+                            ok;
+                        {error, Reason} ->
+                            ?ERROR_LOG("controlling_process ~p error:~p", [Pid, Reason]),
+                            gen_tcp:close(CSocket)
+                    end;
+                R ->
+                    ?ERROR_LOG("new socket owner process start falied~p", [R])
             end;
         {error, emfile} ->
             receive after 100 -> ok end;
