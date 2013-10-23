@@ -29,7 +29,7 @@ start_link(LSocket, Func) ->
 loop(LSocket, Func) ->
 	case gen_tcp:accept(LSocket, infinity) of
 		{ok, CSocket} ->
-            ?DEBUG_LOG("new C socket1, fun~p", [Func]),
+            %?DEBUG_LOG("new C socket1, fun~p", [Func]),
             case Func(CSocket) of
                 {ok, Pid} -> 
                     case gen_tcp:controlling_process(CSocket, Pid) of
